@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Rigidbody2D rigidbody2D;
     [SerializeField]
-    private float speed = 15f;
+    private float speed = 400f;
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +21,24 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Move();
+    }
+
+    /**
+     * FixedUpdate is called before each internal physical update (moving things due to physics e.g. gravity)
+     * 
+     * * Difference between Update and FixedUpdate *
+     * 
+     * - Update: user inputs, visual effects and interpolation between game states. Frequency of being called
+     *   varies by host device. 150 times per second for 150 FPS. Bad experience for low FPS. This could lead 
+     *   to the speed in it being defined as unit/frame instead of unit/second.
+     * - FixedUpdate: physics-related updates, game state. Unity's fixed timestep is 0.02s, which translates 
+     *   to 50 times of calls per second.
+     * 
+     * Resource: https://john-tucker.medium.com/unity-update-versus-fixedupdate-7a4d4d7bc1f5
+     */
+    void FixedUpdate()
+    {
         Move();
     }
 
@@ -29,12 +47,15 @@ public class PlayerController : MonoBehaviour
      */
     void Move()
     {
-        // 0 for no movement, -1 for left movement and 1 for right movement
+        // 0 for no movement, negative number for left movement and positive number for right movement
         float horizontalDirection = Input.GetAxis("Horizontal");
 
         if (horizontalDirection != 0)
         {
-            rigidbody2D.velocity = new Vector2(horizontalDirection * speed, rigidbody2D.velocity.y);
+            rigidbody2D.velocity = new Vector2(horizontalDirection * speed * Time.deltaTime, rigidbody2D.velocity.y);
+
+            // transform defines the position/rotation/scale of the player. The direction that the player faces changes based on the keyboard input.
+            transform.localScale = new Vector3(Mathf.Sign(horizontalDirection), 1, 1);
         }
     }
 }
