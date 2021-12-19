@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rigidbody2D;
     [SerializeField]
     private float speed = 400f;
+    [SerializeField]
+    private float jumpingForce = 10f;
 
     // Start is called before the first frame update
     void Start()
@@ -42,20 +44,37 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
+    private void Move()
+    {
+        HorizontalMove();
+        Jump();
+    }
+
     /**
-     * The method controls the movement of the players
+     * The method controls the horizontal movement of the players
      */
-    void Move()
+    private void HorizontalMove()
     {
         // 0 for no movement, negative number for left movement and positive number for right movement
-        float horizontalDirection = Input.GetAxis("Horizontal");
+        float horizontalMovement = Input.GetAxis("Horizontal");
 
-        if (horizontalDirection != 0)
+        if (horizontalMovement != 0)
         {
-            rigidbody2D.velocity = new Vector2(horizontalDirection * speed * Time.deltaTime, rigidbody2D.velocity.y);
+            rigidbody2D.velocity = new Vector2(horizontalMovement * speed * Time.fixedDeltaTime, rigidbody2D.velocity.y);
 
             // transform defines the position/rotation/scale of the player. The direction that the player faces changes based on the keyboard input.
-            transform.localScale = new Vector3(Mathf.Sign(horizontalDirection), 1, 1);
+            transform.localScale = new Vector3(Mathf.Sign(horizontalMovement), 1, 1);
+        }
+    }
+
+    /**
+     * The method controls player's jumping operation
+     */
+    private void Jump()
+    {
+        if (Input.GetButtonDown("Jump"))
+        {
+            rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, jumpingForce * Time.fixedDeltaTime);
         }
     }
 }
